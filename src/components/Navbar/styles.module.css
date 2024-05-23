@@ -8,6 +8,7 @@
   /* border-bottom: 1px solid var(--clr-outline); */
   flex-direction: row;
   justify-content: space-between;
+  position: sticky;
 }
 
 .title {
@@ -78,6 +79,11 @@
   }
 }
 
-.image{
+.image {
   height: 100px;
+}
+
+.dropdown {
+  outline: 2px solid #0055bb;
+  outline-offset: -2px;
 }

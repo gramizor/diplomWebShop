@@ -55,3 +55,15 @@
     width: 6px;
   }
 }
+
+.inputForm {
+  display: flex;
+  margin: auto;
+  width: 50%;
+  display: flex;
+  gap: 10px;
+}
+
+.input {
+  flex-grow: 1;
+}
