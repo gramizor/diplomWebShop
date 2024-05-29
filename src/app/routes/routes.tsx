@@ -1,14 +1,12 @@
 // import MainLayout from "../../modules/MainLayout/MainLayout";
 import MainLayout from "../../modules/MainLayout/MainLayout";
-import {
-  LoginPage,
-  MainPage,
-  NotFoundPage,
-  RecoverPage,
-  RegisterPage,
-} from "../../pages";
 import AnalogPage from "../../pages/AnalogPage/AnalogPage";
 import CatalogPage from "../../pages/CatalogPage/CatalogPage";
+import { LoginPage } from "../../pages/LoginPage/LoginPage";
+import { MainPage } from "../../pages/MainPage/MainPage";
+import { NotFoundPage } from "../../pages/NotFoundPage/NotFoundPage";
+import { RecoverPage } from "../../pages/RecoverPage/RecoverPage";
+import { RegisterPage } from "../../pages/RegisterPage/RegisterPage";
 import { IAppRoute } from "./types";
 
 /**
