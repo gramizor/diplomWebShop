@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { RoutesEnum } from "../../app/routes/routes";
 import styles from "./styles.module.css";
-import { loginUser } from "../../core/auth/layer";
 import { ChangeEvent, useState } from "react";
 import {
   TextInput,
@@ -13,7 +12,7 @@ import {
   Container,
   Button,
 } from "@mantine/core";
-import { IUserLoginData } from "../../core/auth/types";
+import { IUserLoginData } from "../../app/routes/types";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -28,9 +27,8 @@ export const LoginPage = () => {
   const handleLoginClick = async () => {
     if (isButtonDisabled) return;
     setIsBtnLoading(true);
-    loginUser(formData)
-      .then(() => navigate(RoutesEnum.Home))
-      .finally(() => setIsBtnLoading(false));
+    navigate(RoutesEnum.Home);
+    setIsBtnLoading(false);
   };
 
   const handleDataChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +60,7 @@ export const LoginPage = () => {
           />
           <PasswordInput
             label="Пароль"
-            placeholder= "Введите пароль"
+            placeholder="Введите пароль"
             name="password"
             value={formData.password}
             onChange={handleDataChange}

@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { RoutesEnum } from "../../app/routes/routes";
 import styles from "./styles.module.css";
-import { registerUser } from "../../core/auth/layer";
 import {
   TextInput,
   PasswordInput,
@@ -16,8 +15,8 @@ import {
   Select,
 } from "@mantine/core";
 import { ChangeEvent, useState } from "react";
-import { IUserRegisterData } from "../../core/auth/types";
 import InputMask from "react-input-mask"; // Импортируем библиотеку
+import { IUserRegisterData } from "../../app/routes/types";
 
 interface IUserRegisterFromData extends IUserRegisterData {
   password2: string;

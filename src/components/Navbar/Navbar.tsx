@@ -1,21 +1,14 @@
 import styles from "./styles.module.css";
-import { logoutUser } from "../../core/auth/layer";
 import { RoutesEnum } from "../../app/routes";
-import { useDisclosure } from "@mantine/hooks";
-import { Burger, Button, Menu } from "@mantine/core";
+import { Button, Menu } from "@mantine/core";
 import { Link, useLocation } from "react-router-dom";
 import mephi from "../../assets/icons/logo-without.png";
 import clsx from "clsx";
 import { IconSearch } from "@tabler/icons-react";
+import BurgerForm from "../../modules/BurgerForm/BurgerForm";
 
 const Navbar = () => {
-  const [opened, { toggle }] = useDisclosure();
-
   const { pathname } = useLocation();
-
-  const toggleMenu = () => {
-    toggle();
-  };
 
   return (
     <nav className={styles.nav}>
@@ -34,8 +27,11 @@ const Navbar = () => {
           shadow="md"
           position="bottom-end"
           width={250}
-          offset={20}
+          offset={10}
           classNames={{ dropdown: styles.dropdown }}
+          trigger="click-hover"
+          openDelay={100}
+          closeDelay={400}
         >
           <Menu.Target>
             <Button
@@ -47,12 +43,12 @@ const Navbar = () => {
           </Menu.Target>
           <Menu.Dropdown>
             <Menu.Label>Варианты поиска</Menu.Label>
-            <Menu.Item component="a" href="https://mantine.dev">
-              Каталог деталей
-            </Menu.Item>
-            <Menu.Item component="a" href="https://mantine.dev">
-              Поиск аналагов
-            </Menu.Item>
+            <Link to={RoutesEnum.Catalog}>
+              <Menu.Item>Каталог деталей</Menu.Item>
+            </Link>
+            <Link to={RoutesEnum.Analog}>
+              <Menu.Item>Поиск аналогов</Menu.Item>
+            </Link>
             <Menu.Item component="a" href="https://mantine.dev">
               Поиск среди продавцов
             </Menu.Item>
@@ -63,17 +59,7 @@ const Navbar = () => {
         </Menu>
       </div>
       <div className={styles.rightSection}>
-        <Burger
-          opened={opened}
-          onClick={toggleMenu}
-          aria-label="Toggle navigation"
-          color="var(--clr-on-surface)"
-        />
-        <div className={clsx(styles.menuItems, { [styles.show]: opened })}>
-          <Button onClick={logoutUser} color="#0055BB">
-            Выйти
-          </Button>
-        </div>
+        <BurgerForm />
       </div>
     </nav>
   );

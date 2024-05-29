@@ -1,0 +1,17 @@
+.inputForm {
+  display: flex;
+  margin: auto;
+  width: 50%;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: end;
+}
+
+.input {
+  flex-grow: 1;
+}
+
+.wrapper{
+  max-width: 250px;
+}

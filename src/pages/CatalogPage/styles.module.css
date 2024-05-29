@@ -1,0 +1,25 @@
+.catalog {
+  display: flex;
+  flex-wrap: wrap;
+margin-top: 10%;
+}
+
+.categoryContainer {
+  width: 30%;
+  margin: 10px 1.5%;
+  box-sizing: border-box;
+}
+
+.category {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.subcategories {
+  display: flex;
+  flex-direction: column;
+}
+
+.subcategory {
+  margin-bottom: 5px;
+}

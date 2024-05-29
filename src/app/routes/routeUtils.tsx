@@ -1,5 +1,4 @@
 import { RouteObject } from "react-router-dom";
-import { PrivateRoute } from "../../components";
 import { routes } from "./routes";
 import { IAppRoute, ISimpleRouteObject } from "./types";
 
@@ -21,11 +20,12 @@ function convertRoutes(routes: IAppRoute[]): RouteObject[] {
   return routes.map((route) => {
     const convertedRoute: RouteObject = {
       path: route.path,
-      element: route.isPrivate ? (
-        <PrivateRoute>{route.element}</PrivateRoute>
-      ) : (
-        route.element
-      ),
+      element:
+        // route.isPrivate ? (
+        //   <PrivateRoute>{route.element}</PrivateRoute>
+        // ) : (
+        route.element,
+      // ),
     };
     if (route.children) {
       convertedRoute.children = convertRoutes(route.children);

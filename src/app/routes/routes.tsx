@@ -1,3 +1,5 @@
+// import MainLayout from "../../modules/MainLayout/MainLayout";
+import MainLayout from "../../modules/MainLayout/MainLayout";
 import {
   LoginPage,
   MainPage,
@@ -5,6 +7,8 @@ import {
   RecoverPage,
   RegisterPage,
 } from "../../pages";
+import AnalogPage from "../../pages/AnalogPage/AnalogPage";
+import CatalogPage from "../../pages/CatalogPage/CatalogPage";
 import { IAppRoute } from "./types";
 
 /**
@@ -15,6 +19,8 @@ export enum RoutesEnum {
   Register = "/register",
   Auth = "/auth",
   Recover = "/recover",
+  Catalog = "/catalog",
+  Analog = "/analog",
 }
 
 /**
@@ -31,9 +37,23 @@ export enum RoutesEnum {
 export const routes: IAppRoute[] = [
   {
     path: RoutesEnum.Home,
-    index: true,
-    isPrivate: false,
     element: <MainPage />,
+  },
+  {
+    path: RoutesEnum.Catalog,
+    element: (
+      <MainLayout>
+        <CatalogPage />,
+      </MainLayout>
+    ),
+  },
+  {
+    path: RoutesEnum.Analog,
+    element: (
+      <MainLayout>
+        <AnalogPage />,
+      </MainLayout>
+    ),
   },
   {
     path: RoutesEnum.Auth,

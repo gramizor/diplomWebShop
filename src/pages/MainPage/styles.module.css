@@ -1,69 +1,6 @@
 .page {
   height: 100vh;
-
   display: grid;
   grid-template-rows: auto 1fr;
-
   background-color: var(--clr-surface);
-}
-
-.body {
-  height: 100%;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 500px 1fr 0;
-  transition: 0.3s;
-}
-
-.resizableBlock {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  min-width: 200px;
-  max-width: 600px;
-  width: 300px;
-  height: 100%;
-
-  user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-}
-
-.slider {
-  position: relative;
-  width: 6px;
-  height: 100%;
-  cursor: ew-resize;
-}
-.slider::after {
-  position: absolute;
-  content: "";
-  inset: 0;
-  left: 1px;
-  width: 4px;
-  background-color: var(--clr-outline);
-  transition: 0.3s;
-}
-
-.body.open {
-  grid-template-columns: 300px 1fr auto;
-}
-@media (hover: hover) {
-  .slider:hover::after {
-    left: 0;
-    width: 6px;
-  }
-}
-
-.inputForm {
-  display: flex;
-  margin: auto;
-  width: 50%;
-  display: flex;
-  gap: 10px;
-}
-
-.input {
-  flex-grow: 1;
 }
