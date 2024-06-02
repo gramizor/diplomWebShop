@@ -1,5 +1,6 @@
 // import MainLayout from "../../modules/MainLayout/MainLayout";
 import MainLayout from "../../modules/MainLayout/MainLayout";
+import AccountSettings from "../../pages/AccountSettings/AccountSettings";
 import AnalogPage from "../../pages/AnalogPage/AnalogPage";
 import CatalogPage from "../../pages/CatalogPage/CatalogPage";
 import { LoginPage } from "../../pages/LoginPage/LoginPage";
@@ -19,6 +20,7 @@ export enum RoutesEnum {
   Recover = "/recover",
   Catalog = "/catalog",
   Analog = "/analog",
+  AccountSetting = "/settings",
 }
 
 /**
@@ -50,6 +52,14 @@ export const routes: IAppRoute[] = [
     element: (
       <MainLayout>
         <AnalogPage />,
+      </MainLayout>
+    ),
+  },
+  {
+    path: RoutesEnum.AccountSetting,
+    element: (
+      <MainLayout>
+        <AccountSettings />,
       </MainLayout>
     ),
   },

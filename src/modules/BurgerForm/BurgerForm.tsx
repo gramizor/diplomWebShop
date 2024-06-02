@@ -33,7 +33,7 @@ const BurgerForm = () => {
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label></Menu.Label>
-          <Link to={RoutesEnum.Catalog}>
+          <Link to={RoutesEnum.AccountSetting}>
             <Menu.Item>Настройки аккаунта</Menu.Item>
           </Link>
           <Link to={RoutesEnum.Analog}>
