@@ -1,14 +1,18 @@
 import { Burger, Menu } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import styles from "./styles.module.css";
-import { RoutesEnum } from "../../app/routes";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const BurgerForm = () => {
   const [opened, { toggle }] = useDisclosure();
+  const [isOpenPunkts, setIsOpenPunkts] = useState(false);
 
   const toggleMenu = () => {
     toggle();
+  };
+
+  const handleOpen = () => {
+    setIsOpenPunkts(!isOpenPunkts);
   };
 
   return (
@@ -20,7 +24,6 @@ const BurgerForm = () => {
         offset={10}
         classNames={{ dropdown: styles.dropdown }}
         opened={opened}
-        onClose={() => toggleMenu()}
         transitionProps={{ transition: "rotate-right", duration: 150 }}
       >
         <Menu.Target>
@@ -33,29 +36,40 @@ const BurgerForm = () => {
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label></Menu.Label>
-          <Link to={RoutesEnum.AccountSetting}>
-            <Menu.Item>Настройки аккаунта</Menu.Item>
-          </Link>
-          <Link to={RoutesEnum.Analog}>
-            <Menu.Item>Данные покупателя</Menu.Item>
-          </Link>
-          <Menu.Item component="a" className={styles.subItem}>
-            Информация о покупателе
-          </Menu.Item>
-          <Menu.Item disabled component="a" className={styles.subItem}>
-            Платежная информация
-          </Menu.Item>
-          <Menu.Item disabled component="a" className={styles.subItem}>
-            Адреса
-          </Menu.Item>
-          <Menu.Item component="a" href="https://mantine.dev">
+          <Menu.Item onClick={handleOpen}>Данные покупателя</Menu.Item>
+          {isOpenPunkts && (
+            <>
+              <Menu.Item className={styles.subItem}>
+                Информация о покупателе
+              </Menu.Item>
+              <Menu.Item disabled className={styles.subItem}>
+                Платежная информация
+              </Menu.Item>
+              <Menu.Item disabled className={styles.subItem}>
+                Адреса
+              </Menu.Item>
+              <Menu.Item className={styles.subItem}>
+                Избранные продавцы
+              </Menu.Item>
+              <Menu.Item className={styles.subItem}>
+                Черный список продавцов
+              </Menu.Item>
+            </>
+          )}
+          <Menu.Item disabled component="a" href="https://mantine.dev">
             Корзины
           </Menu.Item>
-          <Menu.Item component="a" href="https://mantine.dev">
+          <Menu.Item disabled component="a" href="https://mantine.dev">
             Запросы
           </Menu.Item>
           <Menu.Item disabled component="a" href="https://mantine.dev">
             Заказы
+          </Menu.Item>
+          <Menu.Item color="#0055BB" onClick={() => alert("Поменять пароль")}>
+            Поменять пароль
+          </Menu.Item>
+          <Menu.Item color="red" onClick={() => alert("Выйти")}>
+            Выйти
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>

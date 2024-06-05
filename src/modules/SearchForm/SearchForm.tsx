@@ -5,12 +5,18 @@ import { IconSearch } from "@tabler/icons-react";
 import { FormEvent, useState } from "react";
 
 interface SearchFormProps {
-  onSearch?: (searchQuery: string) => void;
+  onSearch?: (searchQuery: string, analogTypes: string[]) => void;
   isSelector?: boolean;
+  placeholder: string;
 }
 
-const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isSelector }) => {
+const SearchForm: React.FC<SearchFormProps> = ({
+  placeholder,
+  onSearch,
+  isSelector,
+}) => {
   const [searchValue, setSearchValue] = useState("");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
   const form = useForm({
     initialValues: { search: "" },
@@ -22,7 +28,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isSelector }) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (onSearch) {
-      onSearch(form.values.search);
+      onSearch(form.values.search, selectedTypes);
     }
     // form.reset();
   };
@@ -31,7 +37,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isSelector }) => {
     <>
       <form onSubmit={handleSubmit} className={styles.inputForm}>
         <Input
-          placeholder="Поиск детали"
+          placeholder={placeholder}
           {...form.getInputProps("search")}
           leftSection={<IconSearch stroke={2} size={16} />}
           className={styles.input}
@@ -45,14 +51,11 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isSelector }) => {
             nothingFoundMessage="Nothing found..."
             checkIconPosition="right"
             onSearchChange={setSearchValue}
-            data={[
-              // "Любой",
-              "Полный",
-              "Ближайший",
-              "Функциональный",
-              "Возможный",
-            ]}
+            value={selectedTypes}
+            onChange={setSelectedTypes}
+            data={["Полный", "Ближайший", "Функциональный", "Возможный"]}
             classNames={{ wrapper: styles.wrapper }}
+            clearable
           />
         )}
         <Button type="submit" color="#0055BB">

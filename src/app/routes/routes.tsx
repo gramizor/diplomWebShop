@@ -8,6 +8,7 @@ import { MainPage } from "../../pages/MainPage/MainPage";
 import { NotFoundPage } from "../../pages/NotFoundPage/NotFoundPage";
 import { RecoverPage } from "../../pages/RecoverPage/RecoverPage";
 import { RegisterPage } from "../../pages/RegisterPage/RegisterPage";
+import SearchSellers from "../../pages/SearchSellers/SearchSellers";
 import { IAppRoute } from "./types";
 
 /**
@@ -21,6 +22,7 @@ export enum RoutesEnum {
   Catalog = "/catalog",
   Analog = "/analog",
   AccountSetting = "/settings",
+  Sellers = "/sellers",
 }
 
 /**
@@ -43,7 +45,7 @@ export const routes: IAppRoute[] = [
     path: RoutesEnum.Catalog,
     element: (
       <MainLayout>
-        <CatalogPage />,
+        <CatalogPage />
       </MainLayout>
     ),
   },
@@ -51,7 +53,7 @@ export const routes: IAppRoute[] = [
     path: RoutesEnum.Analog,
     element: (
       <MainLayout>
-        <AnalogPage />,
+        <AnalogPage />
       </MainLayout>
     ),
   },
@@ -59,7 +61,15 @@ export const routes: IAppRoute[] = [
     path: RoutesEnum.AccountSetting,
     element: (
       <MainLayout>
-        <AccountSettings />,
+        <AccountSettings />
+      </MainLayout>
+    ),
+  },
+  {
+    path: RoutesEnum.Sellers,
+    element: (
+      <MainLayout>
+        <SearchSellers />
       </MainLayout>
     ),
   },

@@ -20,8 +20,7 @@ const ReusableTable = <T,>({ data, columns }: TableProps<T>) => {
   };
 
   const handleDetailClick = (item: T) => {
-    // Здесь вы можете определить логику перехода на страницу детали
-    console.log("Go to detail:", item);
+    console.log("Go to row:", item);
   };
 
   return (
@@ -33,7 +32,7 @@ const ReusableTable = <T,>({ data, columns }: TableProps<T>) => {
               {column.header}
             </th>
           ))}
-          <th className={styles.th}></th> {/* Пустой заголовок для кнопки */}
+          <th className={styles.th}></th>
         </tr>
       </thead>
       <tbody className={styles.tbody}>

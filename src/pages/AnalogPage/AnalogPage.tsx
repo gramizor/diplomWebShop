@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import axios from "axios";
 import ReusableTable from "../../modules/ReusableTable/ReusableTable";
 import SearchForm from "../../modules/SearchForm/SearchForm";
 import styles from "./styles.module.css";
+import BASE_URL from "../../app/config";
 
 interface Detail {
   name: string;
@@ -9,25 +11,10 @@ interface Detail {
   typeDetail: string;
 }
 
-const data: Detail[] = [
-  { name: "VB01-134", manufacturer: "Радиотехники", typeDetail: "Микросхема" },
-  { name: "XP02-221", manufacturer: "Электроника", typeDetail: "Резистор" },
-  { name: "TR03-442", manufacturer: "Технологии", typeDetail: "Транзистор" },
-  {
-    name: "CD04-567",
-    manufacturer: "Комплектующие",
-    typeDetail: "Конденсатор",
-  },
-  { name: "IN05-890", manufacturer: "ПромЭлектро", typeDetail: "Индуктор" },
-  {
-    name: "SW06-213",
-    manufacturer: "Мехатроника",
-    typeDetail: "Переключатель",
-  },
-];
-
 const AnalogPage: React.FC = () => {
   const [search, setSearch] = useState<string | null>(null);
+  const [data, setData] = useState<Detail[]>([]);
+
   const columns = [
     {
       header: "Наименование",
@@ -43,20 +30,43 @@ const AnalogPage: React.FC = () => {
     },
   ];
 
-  const handleSearch = (searchQuery: string) => {
+  const handleSearch = async (searchQuery: string, analogTypes: string[]) => {
     console.log("Поисковый запрос:", searchQuery);
     setSearch(searchQuery);
+
+    try {
+      const response = await axios.post(`${BASE_URL}/detail/analog`, {
+        name: searchQuery,
+        analogTypes: analogTypes,
+      });
+
+      setData(response.data);
+    } catch (error) {
+      console.error("Ошибка при выполнении запроса:", error);
+    }
   };
 
   return (
     <>
-      <SearchForm isSelector onSearch={handleSearch} />
+      <SearchForm
+        placeholder="Поиск детали"
+        isSelector
+        onSearch={handleSearch}
+      />
       {search && (
         <div className={styles.searchDone}>
-          <h1 style={{ textAlign: "center" }}>
-            Найденные аналоги для &#123;{search}&#125;:
-          </h1>
-          <ReusableTable<Detail> data={data} columns={columns} />
+          {data.length > 0 ? (
+            <>
+              <h1 style={{ textAlign: "center" }}>
+                Найденные аналоги для "{search}":
+              </h1>
+              <ReusableTable<Detail> data={data} columns={columns} />
+            </>
+          ) : (
+            <h1 style={{ textAlign: "center" }}>
+              К сожалению, аналоги для "{search}" не найдены
+            </h1>
+          )}
         </div>
       )}
     </>

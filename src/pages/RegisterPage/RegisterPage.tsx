@@ -15,7 +15,9 @@ import {
   Select,
 } from "@mantine/core";
 import { ChangeEvent, useState } from "react";
-import InputMask from "react-input-mask"; // Импортируем библиотеку
+import { useDispatch } from "react-redux";
+import { setTokens } from "../../slices/authSlice";
+import axios from "axios";
 import { IUserRegisterData } from "../../app/routes/types";
 
 interface IUserRegisterFromData extends IUserRegisterData {
@@ -29,6 +31,7 @@ export const RegisterPage = () => {
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isBtnLoading, setIsBtnLoading] = useState(false);
   const [formData, setFormData] = useState<IUserRegisterFromData>({
     email: "",
@@ -38,7 +41,7 @@ export const RegisterPage = () => {
     surname: "",
     phone: "",
     patronymic: "",
-    role: "", // Обновлено значение по умолчанию на пустую строку
+    role: "",
   });
 
   const isButtonDisabled =
@@ -50,28 +53,46 @@ export const RegisterPage = () => {
   const isNextButtonDisabled =
     !formData.name || !formData.surname || !formData.role || !formData.phone;
 
-  // const handleRegisterClick = async () => {
-  //   if (isButtonDisabled) return;
-  //   setIsBtnLoading(true);
-  //   try {
-  //     await registerUser({
-  //       email: formData.email,
-  //       password: formData.password,
-  //     });
-  //     navigate(RoutesEnum.Home);
-  //   } finally {
-  //     setIsBtnLoading(false);
-  //   }
-  // };
-
   const handleDataChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (!(name in formData)) return;
     setFormData({ ...formData, [name]: value });
   };
 
+  const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "");
+    const formattedValue = `+7 (${value.substring(0, 3)}) ${value.substring(
+      3,
+      6
+    )}-${value.substring(6, 8)}-${value.substring(8, 10)}`;
+    setFormData({ ...formData, phone: formattedValue });
+  };
+
   const handleSelectChange = (value: string | null) => {
     setFormData({ ...formData, role: value ?? "" });
+  };
+
+  const handleRegisterClick = async () => {
+    if (isButtonDisabled) return;
+    setIsBtnLoading(true);
+    try {
+      const response = await axios.post("/register", {
+        roleUser: formData.role,
+        surname: formData.surname,
+        firstName: formData.name,
+        middleName: formData.patronymic,
+        email: formData.email,
+        password: formData.password,
+        phoneNumber: formData.phone,
+      });
+      const { access, refresh } = response.data;
+      dispatch(setTokens({ access, refresh }));
+      navigate(RoutesEnum.Home);
+    } catch (error) {
+      console.error("Registration error", error);
+    } finally {
+      setIsBtnLoading(false);
+    }
   };
 
   return (
@@ -118,21 +139,14 @@ export const RegisterPage = () => {
                 placeholder="Иванович"
                 value={formData.patronymic}
               />
-              <InputMask
-                mask="+7 (999) 999-99-99"
+              <TextInput
+                label="Номер телефона"
+                name="phone"
                 value={formData.phone}
-                onChange={handleDataChange}
-              >
-                {(inputProps?: JSX.Element) => (
-                  <TextInput
-                    {...inputProps}
-                    label="Номер телефона"
-                    name="phone"
-                    placeholder="+7 (999) 999-99-99"
-                    required
-                  />
-                )}
-              </InputMask>
+                onChange={handlePhoneChange}
+                placeholder="+7 (999) 999-99-99"
+                required
+              />
               <Select
                 classNames={{ dropdown: styles.dropdown }}
                 label="Ваша роль"
@@ -196,7 +210,7 @@ export const RegisterPage = () => {
               Назад
             </Button>
             <Button
-              onClick={() => navigate("/")}
+              onClick={handleRegisterClick}
               loading={isBtnLoading}
               disabled={isButtonDisabled}
             >

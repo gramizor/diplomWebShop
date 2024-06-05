@@ -10,6 +10,12 @@ import BurgerForm from "../../modules/BurgerForm/BurgerForm";
 const Navbar = () => {
   const { pathname } = useLocation();
 
+  const handleHomeClick = (event: React.MouseEvent) => {
+    if (pathname === RoutesEnum.Home) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <nav className={styles.nav}>
       <div className={styles.leftSection}>
@@ -49,12 +55,12 @@ const Navbar = () => {
             <Link to={RoutesEnum.Analog}>
               <Menu.Item>Поиск аналогов</Menu.Item>
             </Link>
-            <Menu.Item component="a" href="https://mantine.dev">
-              Поиск среди продавцов
-            </Menu.Item>
-            <Menu.Item component="a" href="https://mantine.dev">
-              Поиск продавцов
-            </Menu.Item>
+            <Link to={RoutesEnum.Home} onClick={handleHomeClick}>
+              <Menu.Item>Поиск среди продавцов</Menu.Item>
+            </Link>
+            <Link to={RoutesEnum.Sellers}>
+              <Menu.Item>Поиск продавцов</Menu.Item>
+            </Link>
           </Menu.Dropdown>
         </Menu>
       </div>
