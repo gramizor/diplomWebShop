@@ -6,10 +6,34 @@ import styles from "./styles.module.css";
 import BASE_URL from "../../app/config";
 
 interface Detail {
+  id: string;
   name: string;
   manufacturer: string;
-  typeDetail: string;
+  analogType: string;
+  url: string;
 }
+
+const analogTypeMap = {
+  FUNCTIONAL_ANALOG: "Функциональный",
+  POSSIBLE_ANALOG: "Возможный",
+  NEARLY_ANALOG: "Ближайший",
+  PIN_TO_PIN: "Полный",
+};
+
+const humanReadableToBackend = (humanReadable: string) => {
+  return (
+    Object.keys(analogTypeMap).find(
+      (key) =>
+        analogTypeMap[key as keyof typeof analogTypeMap] === humanReadable
+    ) || humanReadable
+  );
+};
+
+const backendToHumanReadable = (backendValue: string) => {
+  return (
+    analogTypeMap[backendValue as keyof typeof analogTypeMap] || backendValue
+  );
+};
 
 const AnalogPage: React.FC = () => {
   const [search, setSearch] = useState<string | null>(null);
@@ -26,7 +50,10 @@ const AnalogPage: React.FC = () => {
     },
     {
       header: "Тип аналога",
-      accessor: (detail: Detail) => detail.typeDetail,
+      accessor: (detail: Detail) => {
+        const readableType = backendToHumanReadable(detail.analogType);
+        return readableType;
+      },
     },
   ];
 
@@ -37,10 +64,16 @@ const AnalogPage: React.FC = () => {
     try {
       const response = await axios.post(`${BASE_URL}/detail/analog`, {
         name: searchQuery,
-        analogTypes: analogTypes,
+        analogTypes: analogTypes.map(humanReadableToBackend),
       });
 
-      setData(response.data);
+      const dataWithId = response.data.map((item: Detail, index: number) => ({
+        ...item,
+        id: index.toString(), // добавляем уникальный id
+      }));
+
+      console.log("Полученные данные:", dataWithId);
+      setData(dataWithId);
     } catch (error) {
       console.error("Ошибка при выполнении запроса:", error);
     }
@@ -60,7 +93,12 @@ const AnalogPage: React.FC = () => {
               <h1 style={{ textAlign: "center" }}>
                 Найденные аналоги для "{search}":
               </h1>
-              <ReusableTable<Detail> data={data} columns={columns} />
+              <ReusableTable<Detail>
+                data={data}
+                columns={columns}
+                url="/analog"
+                btnProps="Искать деталь"
+              />
             </>
           ) : (
             <h1 style={{ textAlign: "center" }}>

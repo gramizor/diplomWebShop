@@ -56,7 +56,7 @@ const Navbar = () => {
               <Menu.Item>Поиск аналогов</Menu.Item>
             </Link>
             <Link to={RoutesEnum.Home} onClick={handleHomeClick}>
-              <Menu.Item>Поиск среди продавцов</Menu.Item>
+              <Menu.Item>Поиск детали среди продавцов</Menu.Item>
             </Link>
             <Link to={RoutesEnum.Sellers}>
               <Menu.Item>Поиск продавцов</Menu.Item>

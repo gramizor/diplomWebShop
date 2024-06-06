@@ -2,6 +2,8 @@ import { Burger, Menu } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import styles from "./styles.module.css";
 import { useState } from "react";
+import { RoutesEnum } from "../../app/routes/routes";
+import { Link } from "react-router-dom";
 
 const BurgerForm = () => {
   const [opened, { toggle }] = useDisclosure();
@@ -39,9 +41,11 @@ const BurgerForm = () => {
           <Menu.Item onClick={handleOpen}>Данные покупателя</Menu.Item>
           {isOpenPunkts && (
             <>
-              <Menu.Item className={styles.subItem}>
-                Информация о покупателе
-              </Menu.Item>
+              <Link to={RoutesEnum.AccountSetting}>
+                <Menu.Item className={styles.subItem}>
+                  Информация о покупателе
+                </Menu.Item>
+              </Link>
               <Menu.Item disabled className={styles.subItem}>
                 Платежная информация
               </Menu.Item>

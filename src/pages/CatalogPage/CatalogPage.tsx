@@ -1,50 +1,35 @@
-import { Button } from "@mantine/core";
 import React, { useState } from "react";
+import { Button } from "@mantine/core";
 import classNames from "clsx";
 import styles from "./styles.module.css";
+import { useNavigate } from "react-router-dom";
 
-interface Subcategory {
-  name: string;
-}
-
-interface Category {
-  name: string;
-  subcategories: Subcategory[];
-}
-
-const categories: Category[] = [
+const categories = [
   {
-    name: "Категория 1",
-    subcategories: [{ name: "Подкатегория 1.1" }, { name: "Подкатегория 1.2" }],
+    name: "Passive_Components",
+    subcategories: [{ name: "Resistors" }, { name: "Capacitors" }],
   },
   {
-    name: "Категория 2",
-    subcategories: [{ name: "Подкатегория 2.1" }, { name: "Подкатегория 2.2" }],
+    name: "Integrated_Circuits",
+    subcategories: [{ name: "Microcontrollers" }, { name: "Op-Amps" }],
   },
   {
-    name: "Категория 3",
-    subcategories: [{ name: "Подкатегория 3.1" }, { name: "Подкатегория 3.2" }],
+    name: "Semiconductors",
+    subcategories: [{ name: "Diodes" }, { name: "Transistors" }],
   },
   {
-    name: "Категория 4",
-    subcategories: [{ name: "Подкатегория 4.1" }, { name: "Подкатегория 4.2" }],
+    name: "Display_Modules",
+    subcategories: [{ name: "LCD" }, { name: "OLED" }],
   },
   {
-    name: "Категория 5",
-    subcategories: [{ name: "Подкатегория 5.1" }, { name: "Подкатегория 5.2" }],
-  },
-  {
-    name: "Категория 6",
-    subcategories: [{ name: "Подкатегория 6.1" }, { name: "Подкатегория 6.2" }],
+    name: "Electromechanical",
+    subcategories: [{ name: "Relays" }, { name: "Switches" }],
   },
 ];
 
 const CatalogPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
-
-  const handleCategoryClick = (index: number) => {
-    setActiveCategory(activeCategory === index ? null : index);
-  };
+  const navigate = useNavigate();
 
   return (
     <div className={styles.catalog}>
@@ -52,7 +37,7 @@ const CatalogPage: React.FC = () => {
         <div key={index} className={styles.categoryContainer}>
           <Button
             color="#0055BB"
-            onClick={() => handleCategoryClick(index)}
+            onClick={() => setActiveCategory(index)}
             className={classNames(styles.category)}
             variant={activeCategory === index ? "filled" : "outline"}
           >
@@ -66,6 +51,9 @@ const CatalogPage: React.FC = () => {
                   key={subIndex}
                   className={styles.subcategory}
                   variant="light"
+                  onClick={() => {
+                    navigate(`/catalog/${category.name}/${subcategory.name}`);
+                  }}
                 >
                   {subcategory.name}
                 </Button>
