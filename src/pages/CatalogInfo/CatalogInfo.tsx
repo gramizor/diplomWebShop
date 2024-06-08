@@ -21,11 +21,7 @@ const CatalogInfo = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/detail/${categoryName}`, {
-          params: {
-            page: 0,
-            size: 10,
-            sort: "name",
-          },
+          params: {},
         });
 
         console.log(response.data);
@@ -68,7 +64,7 @@ const CatalogInfo = () => {
         <ReusableTable<Detail>
           data={data}
           columns={columns}
-          url="/analog"
+          url={(detail) => `/home/${detail.name}`}
           btnProps="Искать деталь"
         />
       )}

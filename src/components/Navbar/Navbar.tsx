@@ -53,13 +53,13 @@ const Navbar = () => {
               <Menu.Item>Каталог деталей</Menu.Item>
             </Link>
             <Link to={RoutesEnum.Analog}>
-              <Menu.Item>Поиск аналогов</Menu.Item>
+              <Menu.Item>Аналоги</Menu.Item>
             </Link>
             <Link to={RoutesEnum.Home} onClick={handleHomeClick}>
-              <Menu.Item>Поиск детали среди продавцов</Menu.Item>
+              <Menu.Item>Детали среди продавцов</Menu.Item>
             </Link>
             <Link to={RoutesEnum.Sellers}>
-              <Menu.Item>Поиск продавцов</Menu.Item>
+              <Menu.Item>Продавцы</Menu.Item>
             </Link>
           </Menu.Dropdown>
         </Menu>

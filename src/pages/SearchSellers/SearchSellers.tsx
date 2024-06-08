@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Checkbox, Rating, Select, Text } from "@mantine/core";
 import SearchForm from "../../modules/SearchForm/SearchForm";
 import ReusableTable from "../../modules/ReusableTable/ReusableTable";
@@ -14,49 +14,66 @@ interface Seller {
   city: string;
 }
 
+interface RequestData {
+  indFlag: boolean | null;
+  rating: number | null;
+  flagManufacturer: boolean | null;
+  city: string | null;
+  companyName: string;
+  pageable: object;
+}
+
 const SearchSellers = () => {
   const [data, setData] = useState<Seller[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isPhysic, setIsPhysic] = useState<null | boolean>(null);
-  const [isManufacturer, setIsManufacturer] = useState<null | boolean>(null);
+  const [isPhysic, setIsPhysic] = useState<boolean | null>(null);
+  const [isManufacturer, setIsManufacturer] = useState<boolean | null>(null);
   const [city, setCity] = useState<string | null>(null);
   const [minRating, setMinRating] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const filterRequestData = (data: RequestData): Partial<RequestData> => {
+    const filteredData: Partial<RequestData> = {};
 
-  const fetchData = async (searchQuery = "") => {
-    const requestData: any = {
-      indFlag: isPhysic,
-      rating: minRating,
-      flagManufacturer: isManufacturer,
-      city: city,
-      companyName: searchQuery,
-      pageable: {},
-    };
-
-    Object.keys(requestData).forEach((key) => {
-      if (
-        requestData[key] === "" ||
-        requestData[key] === null ||
-        requestData[key] === undefined ||
-        (Array.isArray(requestData[key]) && requestData[key].length === 0)
-      ) {
-        delete requestData[key];
+    Object.keys(data).forEach((key) => {
+      const k = key as keyof RequestData;
+      const value = data[k];
+      if (value !== "" && value !== null && value !== undefined) {
+        filteredData[k] = value;
       }
     });
 
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/seller/filter`,
-        requestData
-      );
-      setData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    return filteredData;
   };
+
+  const fetchData = useCallback(
+    async (searchQuery = "") => {
+      const requestData: RequestData = {
+        indFlag: isPhysic,
+        rating: minRating,
+        flagManufacturer: isManufacturer,
+        city: city,
+        companyName: searchQuery,
+        pageable: {},
+      };
+
+      const filteredData = filterRequestData(requestData);
+
+      try {
+        const response = await axios.post(
+          `${BASE_URL}/seller/filter`,
+          filteredData
+        );
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+    [isPhysic, minRating, isManufacturer, city]
+  );
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const columns = [
     {
@@ -99,14 +116,14 @@ const SearchSellers = () => {
           </div>
           <div className={styles.checkboxContainer}>
             <Checkbox
-              checked={!!isPhysic}
+              checked={isPhysic ?? false}
               label="Работает с физлицами"
               onChange={(event) =>
                 setIsPhysic(event.currentTarget.checked ? true : null)
               }
             />
             <Checkbox
-              checked={!!isManufacturer}
+              checked={isManufacturer ?? false}
               label="Является производителем"
               onChange={(event) =>
                 setIsManufacturer(event.currentTarget.checked ? true : null)
@@ -117,8 +134,8 @@ const SearchSellers = () => {
             searchable
             placeholder="Город производителя"
             data={["Москва", "Санкт-Петербург", "Самара", "Челябинск"]}
-            searchValue={city || ""}
-            onSearchChange={(value) => setCity(value || null)}
+            value={city ?? ""}
+            onChange={(value) => setCity(value || null)}
             clearable
             className={styles.select}
           />

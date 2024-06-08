@@ -13,9 +13,13 @@ import {
   Button,
 } from "@mantine/core";
 import { IUserLoginData } from "../../app/routes/types";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store";
+import { login } from "../../store/slices/authSlice";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const [isBtnLoading, setIsBtnLoading] = useState(false);
   const [formData, setFormData] = useState<IUserLoginData>({
     email: "",
@@ -27,8 +31,16 @@ export const LoginPage = () => {
   const handleLoginClick = async () => {
     if (isButtonDisabled) return;
     setIsBtnLoading(true);
-    navigate(RoutesEnum.Home);
-    setIsBtnLoading(false);
+    try {
+      const resultAction = await dispatch(login(formData));
+      if (login.fulfilled.match(resultAction)) {
+        navigate(RoutesEnum.Home);
+      }
+    } catch (error) {
+      console.error("Login error", error);
+    } finally {
+      setIsBtnLoading(false);
+    }
   };
 
   const handleDataChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +79,12 @@ export const LoginPage = () => {
             required
             mt="md"
           />
+          <Text c="dimmed" size="sm" ta="center" mt={5}>
+            {"Забыли пароль? "}
+            <Anchor to={RoutesEnum.Recover} size="sm" component={Link}>
+              Восстановить
+            </Anchor>
+          </Text>
           <Button
             fullWidth
             mt="xl"

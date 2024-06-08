@@ -16,13 +16,20 @@ import {
 } from "@mantine/core";
 import { ChangeEvent, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setTokens } from "../../slices/authSlice";
-import axios from "axios";
+import { AppDispatch } from "../../store";
+import { register } from "../../store/slices/authSlice";
 import { IUserRegisterData } from "../../app/routes/types";
 
 interface IUserRegisterFromData extends IUserRegisterData {
   password2: string;
 }
+
+const roleOptions = [
+  { label: "Физическое лицо", value: "INDIVIDUAL_CUSTOMER" },
+  { label: "Юридическое лицо", value: "LEGAL_CUSTOMER" },
+  { label: "Поставщик", value: "SUPPLIER" },
+  { label: "Продавец", value: "SUB_SELLER" },
+];
 
 export const RegisterPage = () => {
   const [active, setActive] = useState(0);
@@ -31,7 +38,7 @@ export const RegisterPage = () => {
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [isBtnLoading, setIsBtnLoading] = useState(false);
   const [formData, setFormData] = useState<IUserRegisterFromData>({
     email: "",
@@ -60,11 +67,28 @@ export const RegisterPage = () => {
   };
 
   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "");
-    const formattedValue = `+7 (${value.substring(0, 3)}) ${value.substring(
-      3,
-      6
-    )}-${value.substring(6, 8)}-${value.substring(8, 10)}`;
+    let value = e.target.value.replace(/\D/g, ""); // Удаляем все нецифровые символы
+    if (value.startsWith("7")) {
+      value = value.substring(1); // Удаляем лишнюю семерку в начале
+    }
+    if (value.length > 10) value = value.substring(0, 10); // Обрезаем строку до 10 цифр
+
+    let formattedValue = "+7";
+    if (value.length > 0) {
+      formattedValue += ` (${value.substring(0, 3)}`;
+    } else {
+      formattedValue += ` (`;
+    }
+    if (value.length >= 4) {
+      formattedValue += `) ${value.substring(3, 6)}`;
+    }
+    if (value.length >= 7) {
+      formattedValue += `-${value.substring(6, 8)}`;
+    }
+    if (value.length >= 9) {
+      formattedValue += `-${value.substring(8, 10)}`;
+    }
+
     setFormData({ ...formData, phone: formattedValue });
   };
 
@@ -76,18 +100,20 @@ export const RegisterPage = () => {
     if (isButtonDisabled) return;
     setIsBtnLoading(true);
     try {
-      const response = await axios.post("/register", {
-        roleUser: formData.role,
-        surname: formData.surname,
-        firstName: formData.name,
-        middleName: formData.patronymic,
-        email: formData.email,
-        password: formData.password,
-        phoneNumber: formData.phone,
-      });
-      const { access, refresh } = response.data;
-      dispatch(setTokens({ access, refresh }));
-      navigate(RoutesEnum.Home);
+      const resultAction = await dispatch(
+        register({
+          roleUser: formData.role,
+          surname: formData.surname,
+          firstName: formData.name,
+          middleName: formData.patronymic,
+          email: formData.email,
+          password: formData.password,
+          phoneNumber: formData.phone,
+        })
+      );
+      if (register.fulfilled.match(resultAction)) {
+        navigate(RoutesEnum.Auth);
+      }
     } catch (error) {
       console.error("Registration error", error);
     } finally {
@@ -151,13 +177,7 @@ export const RegisterPage = () => {
                 classNames={{ dropdown: styles.dropdown }}
                 label="Ваша роль"
                 placeholder="Выберите роль"
-                data={[
-                  {
-                    group: "Покупатель",
-                    items: ["Физическое лицо", "Юридическое лицо"],
-                  },
-                  { group: "Продавец", items: ["Поставщик", "Продавец"] },
-                ]}
+                data={roleOptions}
                 value={formData.role}
                 onChange={handleSelectChange}
                 required

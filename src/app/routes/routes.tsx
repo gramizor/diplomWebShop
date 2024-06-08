@@ -1,8 +1,11 @@
 import MainLayout from "../../modules/MainLayout/MainLayout";
 import AccountSettings from "../../pages/AccountSettings/AccountSettings";
 import AnalogPage from "../../pages/AnalogPage/AnalogPage";
+import BlacklistSellers from "../../pages/BlacklistSellers/BlacklistSellers";
 import CatalogInfo from "../../pages/CatalogInfo/CatalogInfo";
 import CatalogPage from "../../pages/CatalogPage/CatalogPage";
+import ConfirmMail from "../../pages/ConfirmMail/ConfirmMail";
+import FavoriteSellers from "../../pages/FavoriteSellers/FavoriteSellers";
 import { LoginPage } from "../../pages/LoginPage/LoginPage";
 import { MainPage } from "../../pages/MainPage/MainPage";
 import { NotFoundPage } from "../../pages/NotFoundPage/NotFoundPage";
@@ -16,13 +19,16 @@ export enum RoutesEnum {
   Home = "/",
   Register = "/register",
   Auth = "/auth",
-  Recover = "/recover",
+  Recover = "/recovery/:token",
   Catalog = "/catalog",
   CatalogInfo = "/catalog/:categoryName/:subcategoryName",
   Analog = "/analog",
   AccountSetting = "/settings",
   Sellers = "/sellers",
   SellerInfo = "/seller/:companyName",
+  FavoriteSellers = "/sellers/favorite",
+  BlackListSellers = "/sellers/blacklist",
+  Confirm = "/token/:token",
 }
 
 export const routes: IAppRoute[] = [
@@ -31,6 +37,14 @@ export const routes: IAppRoute[] = [
     element: (
       <MainLayout>
         <MainPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: RoutesEnum.Confirm,
+    element: (
+      <MainLayout>
+        <ConfirmMail />
       </MainLayout>
     ),
   },
@@ -71,6 +85,22 @@ export const routes: IAppRoute[] = [
     element: (
       <MainLayout>
         <SearchSellers />
+      </MainLayout>
+    ),
+  },
+  {
+    path: RoutesEnum.FavoriteSellers,
+    element: (
+      <MainLayout>
+        <FavoriteSellers />
+      </MainLayout>
+    ),
+  },
+  {
+    path: RoutesEnum.BlackListSellers,
+    element: (
+      <MainLayout>
+        <BlacklistSellers />
       </MainLayout>
     ),
   },

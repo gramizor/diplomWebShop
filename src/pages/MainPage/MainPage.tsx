@@ -1,10 +1,9 @@
-import styles from "./styles.module.css";
 import { useState } from "react";
 import { Checkbox, Rating, Select, Text } from "@mantine/core";
 import SearchForm from "../../modules/SearchForm/SearchForm";
 import ReusableTable from "../../modules/ReusableTable/ReusableTable";
-import axios from "axios";
-import BASE_URL from "../../app/config";
+import styles from "./styles.module.css";
+import api from "../../app/api";
 
 interface Detail {
   id: string;
@@ -17,11 +16,11 @@ interface Detail {
 const MainPage = () => {
   const [data, setData] = useState<Detail[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isPhysic, setIsPhysic] = useState(true);
-  const [isManufacturer, setIsManufacturer] = useState(false);
-  const [city, setCity] = useState<string>("");
-  const [favorite, setFavorite] = useState<string>("");
-  const [rating, setRating] = useState<number>(3);
+  const [isPhysic, setIsPhysic] = useState<boolean | null>(null);
+  const [isManufacturer, setIsManufacturer] = useState<boolean | null>(null);
+  const [city, setCity] = useState<string | null>(null);
+  const [favorite, setFavorite] = useState<string | null>(null);
+  const [rating, setRating] = useState<number | null>(null);
 
   const columns = [
     {
@@ -38,30 +37,51 @@ const MainPage = () => {
     },
   ];
 
-  const handleSearch = async (
-    searchQuery: string,
-    analogTypes: string[],
-    rating: number,
-    isPhysic: boolean,
-    isManufacturer: boolean,
-    city: string,
-    favorite: string
-  ) => {
+  const filterRequestData = (
+    data: Record<string, unknown>
+  ): Record<string, unknown> => {
+    const filteredData: Record<string, unknown> = {};
+
+    Object.keys(data).forEach((key) => {
+      const value = data[key];
+      if (value !== "" && value !== null && value !== undefined) {
+        filteredData[key] = value;
+      }
+    });
+
+    return filteredData;
+  };
+
+  const handleSearch = async (searchQuery: string, analogTypes: string[]) => {
+    const requestData = {
+      detailName: searchQuery,
+      analogTypes: analogTypes.join(","),
+      indFlag: isPhysic,
+      rating: rating,
+      flagManufacturer: isManufacturer,
+      city: city,
+      favoriteFlag:
+        favorite === "Избранное"
+          ? true
+          : favorite === "Черный список"
+          ? false
+          : null,
+      blacklistFlag:
+        favorite === "Черный список"
+          ? true
+          : favorite === "Избранное"
+          ? false
+          : null,
+    };
+
+    const filteredData = filterRequestData(requestData);
+
     try {
-      const response = await axios.get(`${BASE_URL}/api`, {
-        params: {
-          detailName: searchQuery,
-          analogTypes: analogTypes.join(","),
-          indFlag: isPhysic,
-          rating: rating,
-          flagManufacturer: isManufacturer,
-          city: city,
-          favoriteFlag: favorite === "Избранное",
-          blacklistFlag: favorite === "Черный список",
-        },
+      const response = await api.get<Detail[]>("/api", {
+        params: filteredData,
       });
 
-      const dataWithId = response.data.map((item: Detail, index: number) => ({
+      const dataWithId = response.data.map((item, index) => ({
         ...item,
         id: index.toString(),
       }));
@@ -77,15 +97,7 @@ const MainPage = () => {
       <SearchForm
         placeholder="Поиск детали"
         onSearch={(query: string, analogTypes: string[]) =>
-          handleSearch(
-            query,
-            analogTypes,
-            rating,
-            isPhysic,
-            isManufacturer,
-            city,
-            favorite
-          )
+          handleSearch(query, analogTypes)
         }
       />
 
@@ -96,19 +108,24 @@ const MainPage = () => {
         <div className={styles.params}>
           <div className={styles.rating}>
             <div>Не ниже, чем:</div>
-            <Rating value={rating} onChange={setRating} />
+            <Rating
+              value={rating || 0}
+              onChange={(value) => setRating(value)}
+            />
           </div>
           <div className={styles.checkboxContainer}>
             <Checkbox
-              checked={isPhysic}
+              checked={isPhysic ?? false}
               label="Работает с физлицами"
-              onChange={(event) => setIsPhysic(event.currentTarget.checked)}
+              onChange={(event) =>
+                setIsPhysic(event.currentTarget.checked ? true : null)
+              }
             />
             <Checkbox
-              checked={isManufacturer}
+              checked={isManufacturer ?? false}
               label="Является производителем"
               onChange={(event) =>
-                setIsManufacturer(event.currentTarget.checked)
+                setIsManufacturer(event.currentTarget.checked ? true : null)
               }
             />
           </div>
@@ -116,16 +133,16 @@ const MainPage = () => {
             searchable
             placeholder="Город производителя"
             data={["Москва", "Санкт-Петербург", "Самара", "Челябинск"]}
-            searchValue={city}
-            onSearchChange={(value) => setCity(value)}
+            value={city ?? ""}
+            onChange={(value) => setCity(value || null)}
             clearable
             className={styles.select}
           />
           <Select
             placeholder="Выберите коллекцию"
             data={["Черный список", "Избранное"]}
-            searchValue={favorite}
-            onSearchChange={(value) => setFavorite(value)}
+            value={favorite ?? ""}
+            onChange={(value) => setFavorite(value || null)}
             clearable
             className={styles.select}
           />

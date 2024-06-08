@@ -58,7 +58,6 @@ const AnalogPage: React.FC = () => {
   ];
 
   const handleSearch = async (searchQuery: string, analogTypes: string[]) => {
-    console.log("Поисковый запрос:", searchQuery);
     setSearch(searchQuery);
 
     try {
@@ -96,7 +95,7 @@ const AnalogPage: React.FC = () => {
               <ReusableTable<Detail>
                 data={data}
                 columns={columns}
-                url="/analog"
+                url={(detail) => `/home/${detail.name}`}
                 btnProps="Искать деталь"
               />
             </>
