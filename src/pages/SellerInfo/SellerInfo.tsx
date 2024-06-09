@@ -76,7 +76,7 @@ const SellerInfo = () => {
       await api.post("/sellersList", {
         sellerId: seller.id,
         favoriteFlag: true,
-        blacklistFlag: false,
+        blackListFlag: false,
       });
       fetchSellerInfo();
     } catch (error) {
@@ -90,7 +90,7 @@ const SellerInfo = () => {
       await api.post("/sellersList", {
         sellerId: seller.id,
         favoriteFlag: false,
-        blacklistFlag: true,
+        blackListFlag: true,
       });
       fetchSellerInfo();
     } catch (error) {
