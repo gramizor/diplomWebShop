@@ -1,9 +1,24 @@
 import { useState } from "react";
-import { Checkbox, Rating, Select, Text } from "@mantine/core";
+import { Checkbox, Rating, Select, Text, Tooltip } from "@mantine/core";
 import SearchForm from "../../modules/SearchForm/SearchForm";
 import ReusableTable from "../../modules/ReusableTable/ReusableTable";
 import styles from "./styles.module.css";
 import api from "../../app/api";
+
+interface SellerInfo {
+  id: number;
+  companyName: string;
+  zip: string;
+  city: string;
+  businessAddress: string;
+  inn: string;
+  kpp: string;
+  phoneNumber: string;
+  email: string;
+  indFlag: boolean;
+  flagManufacturer: boolean;
+  rating: number;
+}
 
 interface Detail {
   id: string;
@@ -11,6 +26,15 @@ interface Detail {
   manufacturer: string;
   typeDetail: string;
   url: string;
+  minQuantity: number;
+  quantity: number;
+  orderDays: number | null;
+  firstPrice: number;
+  secondQuantity: number;
+  secondPrice: number;
+  thirdQuantity: number;
+  thirdPrice: number;
+  sellerInfo: SellerInfo;
 }
 
 const MainPage = () => {
@@ -24,16 +48,59 @@ const MainPage = () => {
 
   const columns = [
     {
-      header: "Название",
+      header: "Название компании",
+      accessor: (detail: Detail) => detail.sellerInfo.companyName,
+    },
+    {
+      header: "Рейтинг",
+      accessor: (detail: Detail) => (
+        <div className={styles.ratingView}>
+          <Rating value={detail.sellerInfo.rating} fractions={4} readOnly />
+          {detail.sellerInfo.rating.toFixed(2)}
+        </div>
+      ),
+    },
+    {
+      header: "Наименование детали",
       accessor: (detail: Detail) => detail.name,
     },
     {
-      header: "Производитель",
-      accessor: (detail: Detail) => detail.manufacturer,
+      header: "Мин. для заказа",
+      accessor: (detail: Detail) => detail.minQuantity,
     },
     {
-      header: "Тип аналога",
-      accessor: (detail: Detail) => detail.typeDetail,
+      header: "Кол-во в наличии / Время ожидания",
+      accessor: (detail: Detail) =>
+        detail.quantity === 0
+          ? detail.orderDays === null
+            ? "-"
+            : `${detail.orderDays} дней до появления`
+          : detail.quantity,
+    },
+    {
+      header: "Поштучная цена",
+      accessor: (detail: Detail) => (
+        <Tooltip
+          label={
+            <>
+              <div>
+                При заказе от {detail.minQuantity} шт. - {detail.firstPrice}{" "}
+                руб.
+              </div>
+              <div>
+                При заказе от {detail.secondQuantity} шт. - {detail.secondPrice}{" "}
+                руб.
+              </div>
+              <div>
+                При заказе от {detail.thirdQuantity} шт. - {detail.thirdPrice}{" "}
+                руб.
+              </div>
+            </>
+          }
+        >
+          <span>{detail.firstPrice} руб.</span>
+        </Tooltip>
+      ),
     },
   ];
 
@@ -81,10 +148,14 @@ const MainPage = () => {
         params: filteredData,
       });
 
-      const dataWithId = response.data.map((item, index) => ({
-        ...item,
-        id: index.toString(),
-      }));
+      const dataWithId = response.data.flatMap((item, index) =>
+        item.response.map((detail) => ({
+          ...detail,
+          id: `${index}-${detail.name}`,
+          manufacturer: item.sellerInfo.companyName,
+          sellerInfo: item.sellerInfo,
+        }))
+      );
 
       setData(dataWithId);
     } catch (error) {
@@ -132,7 +203,7 @@ const MainPage = () => {
           <Select
             searchable
             placeholder="Город производителя"
-            data={["Москва", "Санкт-Петербург", "Самара", "Челябинск"]}
+            data={["Москва", "Санкт-Петербург", "Казань"]}
             value={city ?? ""}
             onChange={(value) => setCity(value || null)}
             clearable
