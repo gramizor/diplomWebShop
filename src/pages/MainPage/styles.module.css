@@ -50,3 +50,12 @@
 .ratingView:first-child {
   margin-right: 15px;
 }
+
+.companyInfo {
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  text-align: center;
+  justify-content: center;
+}

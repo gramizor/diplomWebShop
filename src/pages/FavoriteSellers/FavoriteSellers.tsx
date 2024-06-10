@@ -33,7 +33,7 @@ const FavoriteSellers = () => {
 
   const columns = [
     {
-      header: "Name",
+      header: "Название компании",
       accessor: (item: Seller) => item.name,
     },
   ];
@@ -44,6 +44,7 @@ const FavoriteSellers = () => {
 
   return (
     <div>
+      <h1 style={{ textAlign: "center" }}>Список избранных продавцов</h1>
       {sellers.length !== 0 ? (
         <ReusableTable<Seller>
           data={sellers}

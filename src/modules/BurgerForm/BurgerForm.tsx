@@ -67,7 +67,7 @@ const BurgerForm = () => {
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label></Menu.Label>
-          <Menu.Item onClick={togglePunkts}>Данные покупателя</Menu.Item>
+          <Menu.Item onClick={togglePunkts}>Данные аккаунта</Menu.Item>
           {isOpenPunkts && (
             <>
               <Menu.Item
@@ -75,7 +75,7 @@ const BurgerForm = () => {
                 component="a"
                 href={RoutesEnum.AccountSetting}
               >
-                Информация о покупателе
+                Карточка пользователя
               </Menu.Item>
               <Menu.Item disabled className={styles.subItem}>
                 Платежная информация

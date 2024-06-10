@@ -4,6 +4,7 @@ import axios from "axios";
 import ReusableTable from "../../modules/ReusableTable/ReusableTable";
 import styles from "./styles.module.css";
 import BASE_URL from "../../app/config";
+import { RoutesEnum } from "../../app/routes";
 
 interface Detail {
   id: string;
@@ -64,7 +65,7 @@ const CatalogInfo = () => {
         <ReusableTable<Detail>
           data={data}
           columns={columns}
-          url={(detail) => `/home/${detail.name}`}
+          url={() => `${RoutesEnum.Home}`}
           btnProps="Искать деталь"
         />
       )}

@@ -11,7 +11,6 @@ interface Seller {
 }
 
 const FavoriteSellers = () => {
-  // Используем интерфейс Seller для типизации состояния
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,10 +31,9 @@ const FavoriteSellers = () => {
       });
   }, []);
 
-  // Определение колонок для таблицы
   const columns = [
     {
-      header: "Name",
+      header: "Название компании",
       accessor: (item: Seller) => item.name,
     },
   ];
@@ -46,6 +44,7 @@ const FavoriteSellers = () => {
 
   return (
     <div>
+      <h1 style={{ textAlign: "center" }}>Черный список продавцов</h1>
       {sellers.length !== 0 ? (
         <ReusableTable<Seller>
           data={sellers}

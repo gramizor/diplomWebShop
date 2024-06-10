@@ -41,17 +41,24 @@ const SellerInfo = () => {
         const sellerData = response.data[0];
 
         const [favoriteResponse, blacklistResponse] = await Promise.all([
-          api.get(`/sellersList?favoriteFlag=true&sellerId=${sellerData.id}`),
-          api.get(`/sellersList?favoriteFlag=false&sellerId=${sellerData.id}`),
+          api.get(`/sellersList?favoriteFlag=true`),
+          api.get(`/sellersList?favoriteFlag=false`),
         ]);
 
-        setIsFavorite(favoriteResponse.data.length > 0);
-        setIsBlacklisted(blacklistResponse.data.length > 0);
+        const isFavorite = favoriteResponse.data.some(
+          (s: Seller) => s.sellerId === sellerData.id
+        );
+        const isBlacklisted = blacklistResponse.data.some(
+          (s: Seller) => s.sellerId === sellerData.id
+        );
+
+        setIsFavorite(isFavorite);
+        setIsBlacklisted(isBlacklisted);
 
         setSeller({
           ...sellerData,
-          favoriteFlag: favoriteResponse.data.length > 0,
-          blacklistFlag: blacklistResponse.data.length > 0,
+          favoriteFlag: isFavorite,
+          blacklistFlag: isBlacklisted,
         });
       } else {
         setSeller(null);
@@ -101,7 +108,7 @@ const SellerInfo = () => {
   const handleRemoveFromFavorite = async () => {
     if (!seller) return;
     try {
-      await api.delete(`/sellersList?sellerId=${seller.id}`);
+      await api.delete(`/sellersList?sellerId=${seller.id}&favoriteFlag=true`);
       fetchSellerInfo();
     } catch (error) {
       console.error("Error removing from favorite:", error);
@@ -111,7 +118,7 @@ const SellerInfo = () => {
   const handleRemoveFromBlacklist = async () => {
     if (!seller) return;
     try {
-      await api.delete(`/sellersList?sellerId=${seller.id}`);
+      await api.delete(`/sellersList?sellerId=${seller.id}&blacklistFlag=true`);
       fetchSellerInfo();
     } catch (error) {
       console.error("Error removing from blacklist:", error);
@@ -123,7 +130,7 @@ const SellerInfo = () => {
     try {
       await api.put(`/sellersList/move?sellerId=${seller.id}`, {
         favoriteFlag: true,
-        blacklistFlag: true,
+        blacklistFlag: false,
       });
       fetchSellerInfo();
     } catch (error) {
@@ -202,80 +209,79 @@ const SellerInfo = () => {
             />
             <span className={styles.ratingText}>{seller.rating}</span>
           </div>
+          <div>
+            {isFavorite
+              ? "Находится в избранном списке"
+              : isBlacklisted
+              ? "Находится в черном списке"
+              : "Не находится ни в одном из списков"}
+          </div>
 
-          {!isFavorite && !isBlacklisted && (
-            <div>
-              <Group>
-                <Button
-                  className={styles.actionButton}
-                  color="#0055bb"
-                  onClick={handleAddToFavorite}
-                >
-                  Добавить в избранное
-                </Button>
-                <Button
-                  className={styles.actionButton}
-                  color="#0055bb"
-                  onClick={handleAddToBlacklist}
-                >
-                  Добавить в черный список
-                </Button>
-              </Group>
-            </div>
-          )}
-          {isFavorite && (
-            <div>
-              <Group>
-                <Button
-                  className={styles.actionButton}
-                  color="#0055bb"
-                  onClick={handleRemoveFromFavorite}
-                >
-                  Удалить из избранного
-                </Button>
-                <Button
-                  className={styles.actionButton}
-                  color="#0055bb"
-                  onClick={handleMoveToBlacklist}
-                >
-                  Переместить в черный список
-                </Button>
-              </Group>
-            </div>
-          )}
-          {isBlacklisted && (
-            <div>
-              <Group>
-                <Button
-                  className={styles.actionButton}
-                  color="#0055bb"
-                  onClick={handleMoveToFavorite}
-                >
-                  Переместить в избранное
-                </Button>
-                <Button
-                  className={styles.actionButton}
-                  color="#0055bb"
-                  onClick={handleRemoveFromBlacklist}
-                >
-                  Удалить из черного списка
-                </Button>
-              </Group>
-            </div>
-          )}
+          <div className={styles.buttonGroup}>
+            {!isFavorite && !isBlacklisted && (
+              <div>
+                <Group grow>
+                  <Button
+                    className={styles.actionButton}
+                    color="#0055bb"
+                    onClick={handleAddToFavorite}
+                  >
+                    Добавить в избранное
+                  </Button>
+                  <Button
+                    className={styles.actionButton}
+                    color="#0055bb"
+                    onClick={handleAddToBlacklist}
+                  >
+                    Добавить в черный список
+                  </Button>
+                </Group>
+              </div>
+            )}
+            {isFavorite && (
+              <div>
+                <Group grow>
+                  <Button
+                    className={styles.actionButton}
+                    color="#0055bb"
+                    onClick={handleRemoveFromFavorite}
+                  >
+                    Удалить из избранного
+                  </Button>
+                  <Button
+                    className={styles.actionButton}
+                    color="#0055bb"
+                    onClick={handleMoveToBlacklist}
+                  >
+                    Переместить в черный список
+                  </Button>
+                </Group>
+              </div>
+            )}
+            {isBlacklisted && (
+              <div>
+                <Group grow>
+                  <Button
+                    className={styles.actionButton}
+                    color="#0055bb"
+                    onClick={handleMoveToFavorite}
+                  >
+                    Переместить в избранное
+                  </Button>
+                  <Button
+                    className={styles.actionButton}
+                    color="#0055bb"
+                    onClick={handleRemoveFromBlacklist}
+                  >
+                    Удалить из черного списка
+                  </Button>
+                </Group>
+              </div>
+            )}
+          </div>
         </>
       ) : (
-        <>
-          <div>Продавец не найден</div>
-          <Group justify="center">
-            <Button color="#0055bb" onClick={handleAddToFavorite} fullWidth>
-              Добавить в избранное
-            </Button>
-            <Button color="#0055bb" onClick={handleAddToBlacklist} fullWidth>
-              Добавить в черный список
-            </Button>
-          </Group>
-        </>
+        <div>Продавец не найден</div>
       )}
 
       <Button

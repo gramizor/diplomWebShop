@@ -35,28 +35,34 @@ interface Detail {
   thirdQuantity: number;
   thirdPrice: number;
   sellerInfo: SellerInfo;
+  inStockFlag: boolean;
+}
+
+interface SellerData {
+  sellerInfo: SellerInfo;
+  details: Detail[];
 }
 
 const MainPage = () => {
-  const [data, setData] = useState<Detail[]>([]);
+  const [data, setData] = useState<SellerData[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isPhysic, setIsPhysic] = useState<boolean | null>(null);
   const [isManufacturer, setIsManufacturer] = useState<boolean | null>(null);
   const [city, setCity] = useState<string | null>(null);
   const [favorite, setFavorite] = useState<string | null>(null);
   const [rating, setRating] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const columns = [
     {
-      header: "Название компании",
-      accessor: (detail: Detail) => detail.sellerInfo.companyName,
-    },
-    {
-      header: "Рейтинг",
+      header: "Наличие",
       accessor: (detail: Detail) => (
-        <div className={styles.ratingView}>
-          <Rating value={detail.sellerInfo.rating} fractions={4} readOnly />
-          {detail.sellerInfo.rating.toFixed(2)}
+        <div>
+          {detail.inStockFlag ? (
+            <div style={{ color: "green", textAlign: "center" }}>●</div>
+          ) : (
+            <div style={{ color: "red", textAlign: "center" }}>●</div>
+          )}
         </div>
       ),
     },
@@ -108,18 +114,23 @@ const MainPage = () => {
     data: Record<string, unknown>
   ): Record<string, unknown> => {
     const filteredData: Record<string, unknown> = {};
-
     Object.keys(data).forEach((key) => {
       const value = data[key];
       if (value !== "" && value !== null && value !== undefined) {
         filteredData[key] = value;
       }
     });
-
     return filteredData;
   };
 
   const handleSearch = async (searchQuery: string, analogTypes: string[]) => {
+    if (!searchQuery.trim()) {
+      setData([]);
+      return;
+    }
+
+    setSearchQuery(searchQuery);
+
     const requestData = {
       detailName: searchQuery,
       analogTypes: analogTypes.join(","),
@@ -144,20 +155,21 @@ const MainPage = () => {
     const filteredData = filterRequestData(requestData);
 
     try {
-      const response = await api.get<Detail[]>("/api", {
+      const response = await api.get<SellerData[]>("/api", {
         params: filteredData,
       });
 
-      const dataWithId = response.data.flatMap((item, index) =>
-        item.response.map((detail) => ({
+      const formattedData = response.data.map((item) => ({
+        sellerInfo: item.sellerInfo,
+        details: item.response.map((detail) => ({
           ...detail,
-          id: `${index}-${detail.name}`,
+          id: `${item.sellerInfo.id}-${detail.name}`,
           manufacturer: item.sellerInfo.companyName,
           sellerInfo: item.sellerInfo,
-        }))
-      );
+        })),
+      }));
 
-      setData(dataWithId);
+      setData(formattedData);
     } catch (error) {
       console.error("Ошибка при выполнении запроса:", error);
     }
@@ -171,7 +183,6 @@ const MainPage = () => {
           handleSearch(query, analogTypes)
         }
       />
-
       <div className={styles.paramText} onClick={() => setIsOpen(!isOpen)}>
         <Text>Дополнительные параметры поиска</Text>
       </div>
@@ -179,10 +190,13 @@ const MainPage = () => {
         <div className={styles.params}>
           <div className={styles.rating}>
             <div>Не ниже, чем:</div>
-            <Rating
-              value={rating || 0}
-              onChange={(value) => setRating(value)}
-            />
+            <Tooltip label={<>{rating}</>}>
+              <Rating
+                value={rating || 0}
+                onChange={(value) => setRating(value)}
+                fractions={4}
+              />
+            </Tooltip>
           </div>
           <div className={styles.checkboxContainer}>
             <Checkbox
@@ -219,11 +233,29 @@ const MainPage = () => {
           />
         </div>
       )}
-      {data.length > 0 ? (
-        <ReusableTable columns={columns} data={data} />
-      ) : (
-        <h1 style={{ textAlign: "center" }}>К сожалению, детали не найдены</h1>
-      )}
+      {searchQuery.trim() &&
+        (data.length > 0 ? (
+          data.map((seller) => (
+            <div key={seller.sellerInfo.id} className={styles.sellerBlock}>
+              <div className={styles.companyInfo}>
+                <h2>{seller.sellerInfo.companyName}</h2>
+                <div className={styles.ratingView}>
+                  <Rating
+                    value={seller.sellerInfo.rating}
+                    fractions={4}
+                    readOnly
+                  />
+                  {seller.sellerInfo.rating.toFixed(2)}
+                </div>
+              </div>
+              <ReusableTable columns={columns} data={seller.details} />
+            </div>
+          ))
+        ) : (
+          <h1 style={{ textAlign: "center" }}>
+            К сожалению, продавцы с такими деталями не найдены
+          </h1>
+        ))}
     </div>
   );
 };
