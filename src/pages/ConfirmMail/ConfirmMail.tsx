@@ -14,7 +14,7 @@ const ConfirmMail = () => {
         .get(`${BASE_URL}/confirm/${token}`)
         .then((response) => {
           console.log("Email confirmed:", response.data);
-          navigate(RoutesEnum.Home);
+          navigate(RoutesEnum.Auth);
         })
         .catch((error) => {
           console.error("Error confirming email:", error);

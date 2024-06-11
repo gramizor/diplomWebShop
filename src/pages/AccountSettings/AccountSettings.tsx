@@ -49,7 +49,7 @@ const AccountSettings = () => {
         response = await api.get(`${BASE_URL}/consumer`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-      } else if (role === "SUPPLIER" || role === "SUB_SELLER") {
+      } else if (role === "SUPPLIER" || role === "MANUFACTURER") {
         response = await api.get(`${BASE_URL}/seller`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
@@ -107,7 +107,7 @@ const AccountSettings = () => {
         await api.put(`${BASE_URL}/consumer`, formData, {
           headers: { Authorization: `Bearer ${access}` },
         });
-      } else if (role === "SUPPLIER" || role === "SUB_SELLER") {
+      } else if (role === "SUPPLIER" || role === "MANUFACTURER") {
         await api.put(`${BASE_URL}/seller`, formData, {
           headers: { Authorization: `Bearer ${access}` },
         });
