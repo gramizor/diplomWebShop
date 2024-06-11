@@ -13,6 +13,7 @@ const BurgerForm = () => {
   const [isOpenPunkts, setIsOpenPunkts] = useState(false);
   const [menuOpened, { toggle: toggleMenu }] = useDisclosure();
   const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure();
+  const [role] = useState<string | null>(localStorage.getItem("userRole"));
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -75,7 +76,9 @@ const BurgerForm = () => {
                 component="a"
                 href={RoutesEnum.AccountSetting}
               >
-                Карточка пользователя
+                {role === "INDIVIDUAL_CUSTOMER" || role === "LEGAL_CUSTOMER"
+                  ? "Карточка покупателя"
+                  : "Карточка продавца"}
               </Menu.Item>
               <Menu.Item disabled className={styles.subItem}>
                 Платежная информация

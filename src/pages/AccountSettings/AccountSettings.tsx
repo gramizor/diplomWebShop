@@ -1,4 +1,4 @@
-import { Loader, Button, TextInput } from "@mantine/core";
+import { Loader, Button, TextInput, Checkbox } from "@mantine/core";
 import { useEffect, useState } from "react";
 import BASE_URL from "../../app/config";
 import api from "../../app/api";
@@ -152,18 +152,33 @@ const AccountSettings = () => {
     return <div>Error loading data</div>;
   }
 
-  const renderInput = (label: string, name: keyof UserData, type = "text") => (
-    <div className={styles.textBlock}>
-      <span className={styles.label}>{label}:</span>{" "}
-      <TextInput
-        type={type}
-        name={name}
-        value={formData[name] ?? ""}
-        onChange={handleChange}
-        readOnly={!isEditable}
-      />
-    </div>
-  );
+  const renderInput = (label: string, name: keyof UserData, type = "text") => {
+    if (type === "checkbox") {
+      return (
+        <div className={styles.textBlock}>
+          <span className={styles.label}>{label}:</span>{" "}
+          <Checkbox
+            name={name}
+            checked={!!formData[name]}
+            onChange={handleChange}
+            disabled={!isEditable}
+          />
+        </div>
+      );
+    }
+    return (
+      <div className={styles.textBlock}>
+        <span className={styles.label}>{label}:</span>{" "}
+        <TextInput
+          type={type}
+          name={name}
+          value={formData[name] ?? ""}
+          onChange={handleChange}
+          readOnly={!isEditable}
+        />
+      </div>
+    );
+  };
 
   const renderCustomerData = () => (
     <>
