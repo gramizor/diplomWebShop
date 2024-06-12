@@ -10,7 +10,7 @@ interface Seller {
   id: string;
   companyName: string;
   rating: number;
-  physics: boolean;
+  indFlag: boolean;
   city: string;
 }
 
@@ -91,7 +91,7 @@ const SearchSellers = () => {
     },
     {
       header: "Работает с ФЛ",
-      accessor: (seller: Seller) => (seller.physics ? "Да" : "Нет"),
+      accessor: (seller: Seller) => (seller.indFlag ? "Да" : "Нет"),
     },
     {
       header: "Город",
